@@ -1,0 +1,66 @@
+{
+  "T1110": {
+    "id": "T1110",
+    "name": "Brute Force",
+    "tactic": "Credential Access",
+    "description": "Adversaries may use brute force techniques to gain access to accounts when passwords are unknown or when password hashes are obtained.",
+    "detection_guidance": "Monitor authentication logs for repeated failures against the same account followed by a success, especially from a single source in a short window.",
+    "reference": "https://attack.mitre.org/techniques/T1110/"
+  },
+  "T1078": {
+    "id": "T1078",
+    "name": "Valid Accounts",
+    "tactic": "Initial Access",
+    "description": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+    "detection_guidance": "Correlate logins from previously unseen source IPs/geolocations with subsequent unusual activity from that account.",
+    "reference": "https://attack.mitre.org/techniques/T1078/"
+  },
+  "T1059.001": {
+    "id": "T1059.001",
+    "name": "Command and Scripting Interpreter: PowerShell",
+    "tactic": "Execution",
+    "description": "Adversaries may abuse PowerShell commands and scripts for execution, often with encoded or obfuscated command-line arguments.",
+    "detection_guidance": "Flag PowerShell processes with encoded (-enc) or obfuscated arguments, especially shortly after an anomalous login.",
+    "reference": "https://attack.mitre.org/techniques/T1059/001/"
+  },
+  "T1021": {
+    "id": "T1021",
+    "name": "Remote Services",
+    "tactic": "Lateral Movement",
+    "description": "Adversaries may use valid accounts to log into a service specifically designed to accept remote connections, such as SMB, RDP, or SSH.",
+    "detection_guidance": "Watch for a single account/device establishing connections to internal servers on service ports (445, 3389, 22) it does not normally touch.",
+    "reference": "https://attack.mitre.org/techniques/T1021/"
+  },
+  "T1046": {
+    "id": "T1046",
+    "name": "Network Service Discovery",
+    "tactic": "Discovery",
+    "description": "Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation.",
+    "detection_guidance": "Look for a single source connecting to many destination ports on the same host in a short time window with mostly rejected/refused connections.",
+    "reference": "https://attack.mitre.org/techniques/T1046/"
+  },
+  "T1071.001": {
+    "id": "T1071.001",
+    "name": "Application Layer Protocol: Web Protocols",
+    "tactic": "Command and Control",
+    "description": "Adversaries may communicate using application layer protocols such as HTTP/HTTPS to avoid detection by blending in with existing traffic.",
+    "detection_guidance": "Correlate outbound HTTPS connections to rare/low-reputation destinations immediately following internal lateral movement or process anomalies.",
+    "reference": "https://attack.mitre.org/techniques/T1071/001/"
+  },
+  "T1041": {
+    "id": "T1041",
+    "name": "Exfiltration Over C2 Channel",
+    "tactic": "Exfiltration",
+    "description": "Adversaries may steal data by exfiltrating it over an existing command and control channel.",
+    "detection_guidance": "Flag large outbound byte transfers to destinations already associated with a suspected C2 connection.",
+    "reference": "https://attack.mitre.org/techniques/T1041/"
+  },
+  "T1590": {
+    "id": "T1590",
+    "name": "Gather Victim Network Information",
+    "tactic": "Reconnaissance",
+    "description": "Adversaries may gather information about the victim's networks that can be used during targeting.",
+    "detection_guidance": "External scanning activity preceding any internal alert can provide useful reconnaissance context.",
+    "reference": "https://attack.mitre.org/techniques/T1590/"
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "doc_id": "playbook-credential-compromise",
+    "source": "internal_playbook",
+    "title": "Playbook: Suspected Credential Compromise",
+    "text": "When a login occurs from a source IP or geography never previously associated with an account, treat the session as unverified. Immediately review any process execution or resource access performed under that session within the following hour. If PowerShell, cmd.exe, or another scripting interpreter runs shortly after the anomalous login, escalate to HIGH severity. Do not wait for a second confirming signal before beginning investigation; credential compromise chains move quickly from login to lateral movement."
+  },
+  {
+    "doc_id": "playbook-lateral-movement",
+    "source": "internal_playbook",
+    "title": "Playbook: Lateral Movement via Remote Services",
+    "text": "Connections from an already-compromised device to internal servers over SMB (445), RDP (3389), or SSH (22) that are not part of the account's normal access pattern indicate possible lateral movement. Cross-reference the destination server's criticality. If the destination hosts sensitive data (databases, file shares), raise severity immediately and isolate the source device pending investigation."
+  },
+  {
+    "doc_id": "playbook-c2-exfiltration",
+    "source": "internal_playbook",
+    "title": "Playbook: Command-and-Control and Data Exfiltration",
+    "text": "Outbound connections to low-reputation or previously unseen external IPs, especially over HTTPS to blend with normal traffic, may indicate command-and-control activity. If followed by a large outbound data transfer, treat as active exfiltration and escalate to CRITICAL. Block the destination at the perimeter only after evidence is preserved, since blocking too early can alert the adversary and destroy forensic value."
+  },
+  {
+    "doc_id": "playbook-brute-force",
+    "source": "internal_playbook",
+    "title": "Playbook: Brute Force Authentication",
+    "text": "A burst of authentication failures against a single account from one source, followed by a success, is a strong brute-force indicator. Verify whether the successful login's source IP matches the account owner's usual pattern. If not, treat the account as compromised regardless of whether the failures technically 'stopped' before success."
+  },
+  {
+    "doc_id": "playbook-port-scan",
+    "source": "internal_playbook",
+    "title": "Playbook: Network Reconnaissance / Port Scanning",
+    "text": "A single external source probing many ports on one internal host in a short window, with most connections rejected, indicates reconnaissance rather than active compromise. This is typically a precursor to a more targeted attack; log the source IP for correlation with subsequent alerts and consider perimeter rate-limiting."
+  },
+  {
+    "doc_id": "vuln-powershell-encoded",
+    "source": "detection_notes",
+    "title": "Detection Notes: Encoded PowerShell Command Lines",
+    "text": "Attackers frequently use PowerShell's -EncodedCommand (-enc) flag to obfuscate malicious commands from casual log review and simple string-matching detections. Any encoded PowerShell execution occurring outside of known administrative maintenance windows should be treated as suspicious until decoded and reviewed."
+  },
+  {
+    "doc_id": "ir-general-procedure",
+    "source": "internal_playbook",
+    "title": "General Incident Response Procedure",
+    "text": "Standard response order: preserve evidence, contain (isolate host or suspend session — never delete data or accounts automatically), investigate root cause, eradicate, recover, and document lessons learned. Automated systems should only ever recommend containment actions to a human analyst, never execute destructive actions unattended."
+  }
+]

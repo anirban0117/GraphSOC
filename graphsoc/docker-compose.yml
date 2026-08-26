@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=mock   # set to 'anthropic' + provide ANTHROPIC_API_KEY for real LLM reasoning
+    volumes:
+      - graphsoc-data:/graphsoc/backend
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  graphsoc-data:

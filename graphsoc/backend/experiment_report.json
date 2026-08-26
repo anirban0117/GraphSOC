@@ -1,0 +1,54 @@
+{
+  "baseline_classifier": {
+    "n_test_samples": 135,
+    "accuracy": 0.9703703703703703,
+    "precision": 0.7142857142857143,
+    "recall": 1.0,
+    "f1": 0.8333333333333334,
+    "confusion_matrix": [
+      [
+        121,
+        4
+      ],
+      [
+        0,
+        10
+      ]
+    ],
+    "classification_report": {
+      "0": {
+        "precision": 1.0,
+        "recall": 0.968,
+        "f1-score": 0.983739837398374,
+        "support": 125.0
+      },
+      "1": {
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "f1-score": 0.8333333333333334,
+        "support": 10.0
+      },
+      "accuracy": 0.9703703703703703,
+      "macro avg": {
+        "precision": 0.8571428571428572,
+        "recall": 0.984,
+        "f1-score": 0.9085365853658537,
+        "support": 135.0
+      },
+      "weighted avg": {
+        "precision": 0.9788359788359788,
+        "recall": 0.9703703703703703,
+        "f1-score": 0.9725986148750377,
+        "support": 135.0
+      }
+    },
+    "roc_auc": 0.9952
+  },
+  "anomaly_detector": {
+    "n_events": 538,
+    "n_flagged_anomalous": 25,
+    "anomaly_rate": 0.046468401486988845,
+    "score_mean": 0.4677730053335874,
+    "score_std": 0.05431781345899386
+  }
+}

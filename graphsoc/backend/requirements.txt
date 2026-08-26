@@ -1,0 +1,26 @@
+# Core API
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+
+# ML / data
+scikit-learn==1.5.2
+pandas==2.2.3
+numpy==1.26.4
+joblib==1.4.2
+networkx==3.3
+
+# Testing
+pytest==8.3.3
+httpx==0.27.2
+
+# --- Optional: enable to move to real GNN experiments (Phase 7) ---
+# torch==2.4.1
+# torch-geometric==2.6.1
+
+# --- Optional: enable to move from TF-IDF RAG to dense embeddings (Phase 10 upgrade) ---
+# sentence-transformers==3.1.1
+# faiss-cpu==1.8.0.post1
+
+# --- Optional: enable real LLM reasoning instead of the deterministic mock ---
+# anthropic==0.34.2

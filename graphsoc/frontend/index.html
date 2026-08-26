@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GraphSOC — Agentic Security Operations Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#10151f; --panel-2:#141b28; --border:#1f2937;
+    --text:#e6eaf2; --text-dim:#8b97ab; --text-faint:#5a6578;
+    --cyan:#3fd1c7; --cyan-dim:#1c4d49;
+    --low:#4b9fd8; --medium:#e0a83d; --high:#e0713d; --critical:#e0453d;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);}
+  .app{max-width:1360px;margin:0 auto;padding:28px 24px 80px;}
+  header.top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:24px;}
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .brand h1{font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:0.02em;margin:0;}
+  .brand .tag{color:var(--cyan);font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;}
+  .subtitle{color:var(--text-dim);font-size:13px;max-width:520px;}
+  .stat-row{display:flex;gap:22px;flex-wrap:wrap;}
+  .stat{font-family:var(--font-mono);}
+  .stat .num{font-size:20px;font-weight:600;color:var(--text);}
+  .stat .lbl{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.06em;}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+  button{background:var(--panel-2);color:var(--text);border:1px solid var(--border);padding:9px 16px;border-radius:6px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:border-color .15s, background .15s;}
+  button:hover{border-color:var(--cyan);background:#16202b;}
+  button.primary{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan);}
+  button.primary:hover{background:#245854;}
+  select{background:var(--panel-2);color:var(--text);border:1px solid var(--border);padding:9px 12px;border-radius:6px;font-family:var(--font-body);font-size:13px;}
+
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;}
+  @media(max-width:900px){.grid{grid-template-columns:1fr;}}
+
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px;}
+  .panel h2{font-family:var(--font-display);font-size:14px;font-weight:600;margin:0 0 14px;letter-spacing:0.02em;color:var(--text-dim);text-transform:uppercase;font-size:11px;}
+
+  .incident-row{padding:12px;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s;}
+  .incident-row:hover{border-color:var(--cyan);background:var(--panel-2);}
+  .incident-row.active{border-color:var(--cyan);background:var(--panel-2);}
+  .sev-badge{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.06em;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+  .sev-LOW{background:rgba(75,159,216,.15);color:var(--low);}
+  .sev-MEDIUM{background:rgba(224,168,61,.15);color:var(--medium);}
+  .sev-HIGH{background:rgba(224,113,61,.15);color:var(--high);}
+  .sev-CRITICAL{background:rgba(224,69,61,.18);color:var(--critical);}
+  .incident-row .meta{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);margin-top:6px;}
+  .incident-row .chain{font-size:12px;color:var(--text-dim);margin-top:6px;}
+
+  .empty{color:var(--text-faint);font-size:13px;text-align:center;padding:40px 10px;}
+
+  .detail h3{font-family:var(--font-display);font-size:18px;margin:0 0 4px;}
+  .detail .sub{color:var(--text-faint);font-family:var(--font-mono);font-size:11px;margin-bottom:18px;}
+
+  .score-row{display:flex;gap:24px;margin-bottom:20px;flex-wrap:wrap;}
+  .score-box{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:14px 20px;}
+  .score-box .big{font-family:var(--font-mono);font-size:26px;font-weight:600;}
+  .score-box .lbl{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;}
+
+  .chain-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 20px;}
+  .chain-node{background:var(--panel-2);border:1px solid var(--cyan);color:var(--cyan);font-family:var(--font-mono);font-size:12px;padding:6px 12px;border-radius:6px;}
+  .chain-arrow{color:var(--text-faint);}
+
+  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin:22px 0 8px;font-family:var(--font-mono);}
+  .evidence-item{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);padding:8px 10px;border-left:2px solid var(--border);margin-bottom:4px;}
+  .evidence-item .badge{color:var(--cyan);font-size:10px;margin-right:8px;}
+  .technique-item{border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;}
+  .technique-item .id{font-family:var(--font-mono);color:var(--cyan);font-size:12px;}
+  .technique-item .name{font-weight:600;font-size:13px;}
+  .technique-item .tactic{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;}
+  .technique-item .rationale{font-size:12px;color:var(--text-dim);margin-top:6px;}
+
+  .action-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text-dim);padding:8px 0;border-bottom:1px solid var(--border);}
+  .action-item:last-child{border-bottom:none;}
+  .action-item .tag{font-family:var(--font-mono);font-size:9px;color:var(--medium);border:1px solid var(--medium);padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:1px;}
+
+  .summary-box{background:var(--panel-2);border-left:2px solid var(--cyan);padding:14px 16px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.6;color:var(--text);margin-bottom:6px;}
+
+  .trace{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+  .trace .step{color:var(--cyan);}
+
+  footer{margin-top:40px;color:var(--text-faint);font-size:11px;font-family:var(--font-mono);border-top:1px solid var(--border);padding-top:16px;}
+  a{color:var(--cyan);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="brand"><h1>GraphSOC</h1><span class="tag">agentic SOC / mvp</span></div>
+      <div class="subtitle">Graph-enhanced, ATT&amp;CK-grounded correlation across auth, network, and process events — with an evidence-citing investigation agent.</div>
+    </div>
+    <div class="stat-row" id="statRow">
+      <div class="stat"><div class="num" id="statEvents">–</div><div class="lbl">events</div></div>
+      <div class="stat"><div class="num" id="statIncidents">–</div><div class="lbl">incidents</div></div>
+      <div class="stat"><div class="num" id="statModel">–</div><div class="lbl">classifier</div></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="primary" onclick="seedAndTrain()">1. Seed data + train models</button>
+    <select id="scenarioSelect">
+      <option value="credential_compromise_exfiltration">Credential compromise → exfiltration</option>
+      <option value="brute_force">Brute force login</option>
+      <option value="port_scan">Port scan (reconnaissance)</option>
+    </select>
+    <button class="primary" onclick="runScenario()">2. Run scenario + investigate</button>
+    <button onclick="refreshAll()">Refresh</button>
+    <button onclick="resetAll()">Reset demo data</button>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Incidents</h2>
+      <div id="incidentList"><div class="empty">No incidents yet — run a scenario to generate one.</div></div>
+    </div>
+
+    <div class="panel detail" id="detailPanel">
+      <div class="empty">Select an incident to see the evidence-grounded investigation.</div>
+    </div>
+  </div>
+
+  <footer>
+    API: <span id="apiHost"></span> · Backend must be running (uvicorn app.main:app --port 8000) · Frontend calls the API directly, no build step.
+  </footer>
+</div>
+
+<script>
+const API = "http://localhost:8000";
+document.getElementById('apiHost').textContent = API;
+let incidents = [];
+let activeId = null;
+
+async function api(path, opts={}) {
+  const res = await fetch(API + path, {
+    headers: {'Content-Type':'application/json'}, ...opts
+  });
+  if (!res.ok) { throw new Error(await res.text()); }
+  return res.json();
+}
+
+function sevColor(s){ return `sev-${s}`; }
+
+async function refreshStats() {
+  try {
+    const h = await api('/health');
+    document.getElementById('statEvents').textContent = h.events_stored;
+    document.getElementById('statModel').textContent = h.classifier_trained ? 'trained' : 'untrained';
+  } catch(e) { document.getElementById('statEvents').textContent = 'offline'; }
+}
+
+async function refreshIncidents() {
+  try {
+    incidents = await api('/api/incidents?limit=50');
+  } catch(e) { incidents = []; }
+  document.getElementById('statIncidents').textContent = incidents.length;
+  const list = document.getElementById('incidentList');
+  if (!incidents.length) {
+    list.innerHTML = '<div class="empty">No incidents yet — run a scenario to generate one.</div>';
+    return;
+  }
+  list.innerHTML = incidents.map(inc => `
+    <div class="incident-row ${inc.incident_id===activeId?'active':''}" onclick="showIncident('${inc.incident_id}')">
+      <span class="sev-badge ${sevColor(inc.severity)}">${inc.severity}</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);margin-left:8px;">risk ${inc.risk_score}</span>
+      <div class="chain">${inc.attack_chain.slice(0,3).join(' → ') || 'No technique chain identified'}</div>
+      <div class="meta">${new Date(inc.created_at).toLocaleString()} · ${inc.affected_users.join(', ') || '—'}</div>
+    </div>
+  `).join('');
+}
+
+function showIncident(id) {
+  activeId = id;
+  const inc = incidents.find(i => i.incident_id === id);
+  refreshIncidents();
+  if (!inc) return;
+
+  const chainHtml = inc.attack_chain.length
+    ? inc.attack_chain.map((c,i) => `<span class="chain-node">${c}</span>${i<inc.attack_chain.length-1?'<span class="chain-arrow">→</span>':''}`).join('')
+    : '<span style="color:var(--text-faint);font-size:13px;">No multi-step chain identified from correlated evidence.</span>';
+
+  const techniquesHtml = inc.attack_techniques.map(t => `
+    <div class="technique-item">
+      <span class="id">${t.id}</span> — <span class="name">${t.name}</span>
+      <div class="tactic">${t.tactic}</div>
+      <div class="rationale">${t.rationale}</div>
+    </div>
+  `).join('') || '<div class="empty">No ATT&CK techniques mapped.</div>';
+
+  const evidenceHtml = inc.evidence.map(e => `
+    <div class="evidence-item"><span class="badge">OBSERVED</span>${e.description}</div>
+  `).join('');
+
+  const actionsHtml = inc.recommended_actions.map(a => `
+    <div class="action-item"><span class="tag">RECOMMENDED</span><span>${a.action}</span></div>
+  `).join('');
+
+  const traceHtml = inc.agent_trace.map(t => `<span class="step">${t.step}</span>`).join(' → ');
+
+  document.getElementById('detailPanel').innerHTML = `
+    <h3>Incident ${inc.incident_id.slice(0,8)}</h3>
+    <div class="sub">${new Date(inc.created_at).toLocaleString()} · affected: ${inc.affected_users.join(', ')} / ${inc.affected_devices.join(', ')}</div>
+
+    <div class="score-row">
+      <div class="score-box"><div class="big" style="color:var(--${inc.severity.toLowerCase()==='low'?'low':inc.severity.toLowerCase()})">${inc.severity}</div><div class="lbl">Severity</div></div>
+      <div class="score-box"><div class="big">${inc.risk_score}</div><div class="lbl">Risk score / 100</div></div>
+      <div class="score-box"><div class="big">${Math.round(inc.confidence*100)}%</div><div class="lbl">Confidence</div></div>
+    </div>
+
+    <div class="section-label">Reconstructed attack chain</div>
+    <div class="chain-flow">${chainHtml}</div>
+
+    <div class="section-label">AI assessment <span style="color:var(--text-faint);">(evidence-grounded, not free-form)</span></div>
+    <div class="summary-box">${inc.investigation_summary}</div>
+
+    <div class="section-label">MITRE ATT&CK mapping</div>
+    ${techniquesHtml}
+
+    <div class="section-label">Observed evidence (${inc.evidence.length} events)</div>
+    ${evidenceHtml}
+
+    <div class="section-label">Recommended response</div>
+    ${actionsHtml}
+
+    <div class="section-label">Agent trace</div>
+    <div class="trace">${traceHtml}</div>
+  `;
+}
+
+async function seedAndTrain() {
+  setBusy(true, 'Seeding synthetic events and training models...');
+  try {
+    await api('/api/dev/seed', {method:'POST', body: JSON.stringify({n_benign:500, include_attacks:true, seed:42})});
+    await api('/api/ml/train', {method:'POST'});
+    await refreshAll();
+  } catch(e) { alert('Error: ' + e.message); }
+  setBusy(false);
+}
+
+async function runScenario() {
+  const scenario = document.getElementById('scenarioSelect').value;
+  setBusy(true, 'Running scenario and investigating...');
+  try {
+    const inc = await api('/api/demo/run_scenario', {method:'POST', body: JSON.stringify({scenario, n_benign_context:150})});
+    await refreshAll();
+    showIncident(inc.incident_id);
+  } catch(e) { alert('Error: ' + e.message); }
+  setBusy(false);
+}
+
+async function resetAll() {
+  if (!confirm('Clear all demo data?')) return;
+  await api('/api/dev/reset', {method:'POST'});
+  activeId = null;
+  await refreshAll();
+  document.getElementById('detailPanel').innerHTML = '<div class="empty">Select an incident to see the evidence-grounded investigation.</div>';
+}
+
+function setBusy(b, msg) {
+  document.querySelectorAll('button').forEach(btn => btn.disabled = b);
+  if (b) document.title = 'GraphSOC — working...'; else document.title = 'GraphSOC';
+}
+
+async function refreshAll() {
+  await refreshStats();
+  await refreshIncidents();
+}
+
+refreshAll();
+setInterval(refreshStats, 5000);
+</script>
+</body>
+</html>
